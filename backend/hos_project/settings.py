@@ -61,7 +61,9 @@ DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=not DEBUG,
+        # SSL is enforced by Neon's connection string (?sslmode=require) when
+        # used; ssl_require=True would break SQLite fallback on free hosts.
+        ssl_require=False,
     )
 }
 
