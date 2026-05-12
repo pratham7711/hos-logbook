@@ -1,87 +1,106 @@
-# Loom script — HOS Logbook walkthrough
+# Loom Script — 4 minutes
 
-Target runtime: 4 to 5 minutes. Tone: calm, confident, no salesy lift in the voice. Speak as if a senior engineer is watching at 1.5x.
+A tight 4-minute walkthrough. Each beat has on-screen direction and the lines to say verbatim. Pace ~120 wpm.
 
----
+**Links to keep open in tabs before recording:**
+1. `https://frontend-mu-five-51.vercel.app/plan`
+2. `https://github.com/pratham7711/hos-logbook` → `backend/apps/hos/engine.py`
+3. `https://github.com/pratham7711/hos-logbook` → `backend/apps/trips/services/plan_trip_service.py`
+4. `https://github.com/pratham7711/hos-logbook` → `frontend/src/components/LogGrid/LogGrid.tsx`
+5. `https://hos-logbook-backend.onrender.com/healthz` (proves backend is live)
 
-## 0:00 – 0:30 — Cold open
-
-**On screen:** `/plan` page, fresh load, hero visible.
-
-> "This is HOS Logbook. The brief was: take a driver's current location, pickup, dropoff, and current cycle hours, and produce a route plus the daily ELD log sheets — compliant with FMCSA Part 395."
-
-> "I built it as a Django plus React app. The HOS engine is a pure Python state machine. The same event array drives both the on-screen grid and the printed PDF. I'll show you the demo first, then walk the code."
-
----
-
-## 0:30 – 1:30 — Canonical demo
-
-**Action:** click **Try the canonical Brooklyn → LA demo**, then **Plan trip**.
-
-> "I've wired in a one-click demo. Brooklyn to Chicago to Los Angeles, departing today at 8 AM Eastern, with 35 hours already used in the current 70 over 8 cycle."
-
-**As the route draws in:**
-
-> "The route comes back from OpenRouteService — real road geometry, not a great-circle line. The draw-on is GSAP. The markers are the pickup, dropoff, three fuel stops, four 10-hour resets, and one 34-hour restart that the engine inserted automatically — I'll explain that in a moment."
-
-**Pan the map briefly.**
-
-> "Distance is 2,789 miles, planned over six service days."
+Render and microphone — go.
 
 ---
 
-## 1:30 – 2:30 — Daily logs and the 34-hour restart
+## Beat 1 · Cold open (0:00 → 0:25)
 
-**Action:** click into Day 1's log sheet.
+**Show:** the live `/plan` hero, full-screen.
 
-> "Each day renders as a standard ELD log sheet. The grid is an SVG, drawn from the event array. Off-duty, sleeper berth, driving, on-duty-not-driving — four rows, status flags at every transition, mileage on the right, remarks at the bottom."
-
-**Switch to Day 4 using DaySwitcher.**
-
-> "Day 4 is where it gets interesting. Without intervention, the next driving block would push the rolling 8-day total past 70 hours. The engine detects that, inserts a 34-hour restart, and resumes on Day 5. You can see the restart block here, and the violations badge stays at zero."
-
-**Hover the violations badge.**
-
-> "If the engine could not satisfy the cycle even with a restart, it would surface a specific violation here — the rule code, the time window, and the segment that triggered it. On this trip there are none."
+> "This is HOS Logbook — a full-stack trip planner and electronic logbook for property-carrying truck drivers. You enter four trip details, and it returns an FMCSA Part 395-compliant route with stops, plus daily log sheets that mirror the paper format drivers use today. Live on Vercel and Render, source on GitHub. Let me show you."
 
 ---
 
-## 2:30 – 3:30 — Officer View, Night mode, PDFs
+## Beat 2 · The demo trip (0:25 → 1:15)
 
-**Action:** toggle Officer View.
+**Show:** click "Use my location" → it fills the field. Then click the demo button — pre-fills Brooklyn → Chicago → LA, cycle 35 hours. Click "Plan trip". Trip page loads.
 
-> "Officer View is high-contrast, read-only, and optimized for someone glancing at a phone in daylight at the side of a road. No theme toggles, no navigation chrome — just the sheets."
+> "Current location can use the browser's geolocation — reverse-geocoded via Nominatim, the free OpenStreetMap endpoint. Pickup and Dropoff have typeahead suggestions from the same API — no key, no signup. I'll skip ahead with the canonical demo trip: Brooklyn to Chicago to LA, with the driver already at 35 hours used on their 70-hour cycle."
 
-**Toggle back, then flip to Night mode.**
+**Show:** the trip page rendering — map polyline draws on, markers appear staggered, HOS clocks fill in.
 
-> "Night mode persists per device. Driver-friendly contrast."
-
-**Click Download day PDF, then Download full trip PDF.**
-
-> "PDFs are server-rendered with ReportLab from the same event array as the SVG. Single-day, or all six days in one file. Open it — the grid is pixel-identical to the screen."
+> "On submit, the Django backend planned the trip in about a second. The polyline animates in with GSAP, every stop kind gets its own marker — pickup, dropoff, fuel every thousand miles, thirty-minute breaks, ten-hour resets, and one 34-hour restart that the engine inserted automatically when the seventy-hour cycle would otherwise have been exceeded."
 
 ---
 
-## 3:30 – 4:30 — Code tour
+## Beat 3 · The daily log sheet (1:15 → 2:00)
 
-**Action:** open `apps/hos/engine.py`.
+**Show:** scroll to day switcher, click Wed 13 May. The paper-faithful log sheet renders.
 
-> "The engine is here. It's a pure state machine — no Django, no I/O. Given a list of route segments and the driver's current cycle position, it walks forward and yields events. Priority order is fixed: 30-minute break first, then 10-hour off-duty, then 34-hour restart, then drive. That ordering is the whole compliance contract."
+> "Six daily logs, one for each service day. The grid mirrors the FMCSA paper format — driver's signature in cursive, name of co-driver, total driving miles, end-date boxes, home operating center, vehicle numbers, pre-trip and post-trip inspection checkboxes per §396.13, and the BOL shipping document number. Twenty-four hours along the top and bottom, light blue grid, red-dot vertices at every status transition, leader lines down to remarks — exactly what an inspector expects to see."
 
-**Open `apps/trips/services/plan_trip_service.py`.**
+**Show:** highlight the totals column on the right reading 24.00, then scroll to the recap.
 
-> "The orchestrator is here. Geocode the three addresses, call ORS for the route, hand the segments to the engine, split by service day, persist, return. One function, easy to test."
+> "Every day's grid sums to exactly twenty-four hours. The seven-day recap at the bottom — required by §395.8(j) — shows rolling on-duty hours and how many hours the driver has available tomorrow."
 
-**Open `frontend/src/components/LogGrid/`.**
+**Show:** click "Day PDF". A 1-page PDF opens.
 
-> "On the frontend, the grid is one SVG component. Events in, paths out. It accepts the same array shape the PDF renderer consumes, so the two can never drift."
+> "And every day exports as a PDF with the same layout. The on-screen SVG and the ReportLab PDF read from the same event array, so they're identical by construction."
 
 ---
 
-## 4:30 – 5:00 — Architecture and sign-off
+## Beat 4 · Polish (2:00 → 2:30)
 
-**Action:** back to `/plan`.
+**Show:** toggle Officer View. Page flips to high-contrast black/white. Toggle Night mode.
 
-> "Frontend is on Vercel. Backend on Render free tier. Postgres on Neon. Routing through OpenRouteService. A cron-job.org ping keeps Render warm."
+> "Officer View is one click — a high-contrast read-only mode for roadside inspections. Night mode for in-cab visibility, with WCAG AAA contrast. Every component is token-driven, so it adapts automatically."
 
-> "Every rule enforced here cites a specific section of FMCSA Part 395. The README has the rule table and the worked example. Source is on GitHub. Thanks for watching."
+---
+
+## Beat 5 · Code tour: the engine (2:30 → 3:30)
+
+**Show:** open `backend/apps/hos/engine.py`. Scroll to `plan_trip`.
+
+> "Behind it, the load-bearing piece is a pure-Python state machine. `plan_trip` walks until the driver reaches the dropoff. At each iteration it picks exactly one action by priority — thirty-minute break when eight cumulative driving hours are reached, ten-hour off-duty when the eleven or fourteen-hour limits hit, thirty-four-hour restart only when the seventy-hour cycle would otherwise be exceeded, then drive toward the next waypoint."
+
+**Show:** scroll to the `_drive_until` function.
+
+> "Inside `_drive_until`, the simulator caps the drive to the soonest of those constraints and emits a partial driving segment. The outer loop's next iteration fires the right reset. No magic — just rules in priority order."
+
+**Show:** open `frontend/src/components/LogGrid/LogGrid.tsx`. Scroll to where transitions and red dots are emitted.
+
+> "On the front end, the LogGrid is a single SVG component — quarter-hour ticks, dual hour labels, status polyline, red dots at every transition, leader-line remarks — all driven by the same event array. The ReportLab PDF on the backend mirrors this geometry exactly, so the digital and paper outputs are guaranteed to match."
+
+**Show:** briefly open `plan_trip_service.py`.
+
+> "The orchestrator is one function — geocode the three locations, get the route from OpenRouteService with the truck profile, run the HOS engine, persist the schedule. One transaction, no jobs queue — the trip plans in under a second."
+
+---
+
+## Beat 6 · Architecture + close (3:30 → 4:00)
+
+**Show:** README architecture diagram (or just say it).
+
+> "Frontend on Vercel, backend on Render's free tier, Postgres on Neon, routing through OpenRouteService — all free, no credit card anywhere. Six unit tests cover the canonical trip and pin the expected violation. End-to-end tested via Playwright, both local and production. Source is on GitHub, ready to fork. Thanks for watching."
+
+---
+
+## Final timing check (target: 4:00 ± 10s)
+
+| Beat | End time | Cum. words |
+|---|---|---|
+| 1 — Cold open | 0:25 | ~55 |
+| 2 — Demo trip | 1:15 | ~165 |
+| 3 — Log sheet | 2:00 | ~265 |
+| 4 — Polish | 2:30 | ~315 |
+| 5 — Code tour | 3:30 | ~420 |
+| 6 — Architecture | 4:00 | ~485 |
+
+If you run long, drop the "no credit card anywhere" line in Beat 6 and the "no jobs queue" sentence in Beat 5 — buys 5 seconds each.
+
+## Recording tips
+- Open all 5 tabs in advance (URLs above). Use Command-1 through 5 to jump between them.
+- Disable browser notifications.
+- Use Loom's "Auto-frame" off for code tabs so the file path stays readable.
+- Hover the map markers briefly during Beat 2 to show popups — don't click them (popups break flow).
+- For Beat 5, have the engine state-machine `while` loop visible top-of-viewport so the priority order reads naturally.
