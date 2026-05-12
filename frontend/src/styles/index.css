@@ -1,0 +1,102 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- design tokens ---------- */
+:root {
+  --bg: #fafbfc;
+  --bg-elev: #ffffff;
+  --bg-sunken: #f3f4f7;
+  --fg: #0f1320;
+  --fg-muted: #586780;
+  --fg-faint: #7d8aa0;
+  --border: #e6e8ee;
+  --accent: #5b6cff;
+  --accent-fg: #ffffff;
+  --amber: #d97706;
+  --danger: #dc2626;
+  --grid-line: #c8ccd6;
+  --grid-line-strong: #6b7280;
+}
+
+.dark {
+  --bg: #070a13;
+  --bg-elev: #0f1422;
+  --bg-sunken: #050811;
+  --fg: #eef0f5;
+  --fg-muted: #aeb6c4;
+  --fg-faint: #7d8aa0;
+  --border: #1e2533;
+  --accent: #7c8aff;
+  --accent-fg: #050811;
+  --amber: #fbbf24;
+  --danger: #f87171;
+  --grid-line: #2f3a4d;
+  --grid-line-strong: #aeb6c4;
+}
+
+html {
+  font-family: "Inter var", Inter, ui-sans-serif, system-ui;
+  font-feature-settings: "cv11", "ss01", "ss03";
+  background: var(--bg);
+  color: var(--fg);
+  color-scheme: light;
+}
+.dark html { color-scheme: dark; }
+body { background: var(--bg); color: var(--fg); }
+
+* { -webkit-font-smoothing: antialiased; }
+
+/* Officer view: high-contrast, large text overrides */
+.officer-view {
+  --bg: #ffffff;
+  --bg-elev: #ffffff;
+  --bg-sunken: #ffffff;
+  --fg: #000000;
+  --fg-muted: #000000;
+  --fg-faint: #333333;
+  --border: #000000;
+  --accent: #000000;
+  --accent-fg: #ffffff;
+  --grid-line: #000000;
+  --grid-line-strong: #000000;
+  font-size: 1.05rem;
+}
+.officer-view .text-sm { font-size: 1rem; }
+
+/* Hardware-accelerated transitions */
+button, a {
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+  will-change: transform;
+}
+
+/* Focus rings */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Print stylesheet — strip chrome, render logs full-bleed */
+@media print {
+  body { background: #fff !important; }
+  .no-print { display: none !important; }
+  .print-page { page-break-after: always; }
+}
+
+/* Leaflet override: zIndex above transparent overlays */
+.leaflet-container {
+  font-family: "Inter var", Inter, ui-sans-serif, system-ui;
+  background: var(--bg-sunken);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
