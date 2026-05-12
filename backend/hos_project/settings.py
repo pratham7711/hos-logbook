@@ -98,6 +98,10 @@ CORS_ALLOWED_ORIGINS = [
     for o in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",")
     if o.strip()
 ]
+# Allow all Vercel preview URLs for this project (they change on every deploy).
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://frontend-[\w-]+-prathams-projects-371c8ade\.vercel\.app$",
+]
 CORS_ALLOW_CREDENTIALS = False
 
 ORS_API_KEY = os.environ.get("ORS_API_KEY", "")
