@@ -73,11 +73,27 @@ button, a {
   will-change: transform;
 }
 
-/* Focus rings */
+/* Focus rings — applied to interactive elements that don't manage their
+   own focus style. Inputs/textareas/selects are wrapped in components that
+   use :focus-within on the wrapper, so we skip them here to avoid a
+   rectangular outline drawn inside a rounded wrapper. */
 *:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 6px;
+}
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-radius: inherit;
+}
+.officer-view input:focus-visible,
+.officer-view textarea:focus-visible {
+  /* In Officer View we WANT a visible outline since the wrapper styling is
+     muted to b/w. Restore a black outline that respects the wrapper bounds. */
+  outline: 3px solid #000;
+  outline-offset: 1px;
 }
 
 /* Print stylesheet — strip chrome, render logs full-bleed */

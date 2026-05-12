@@ -3,20 +3,14 @@ import { useForm, type Resolver } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import {
-  ChevronDown,
-  Clock,
-  Loader2,
-  MapPin,
-  Sparkles,
-  Truck,
-} from "lucide-react";
+import { ChevronDown, Clock, Loader2, Sparkles, Truck } from "lucide-react";
 
 import { createTrip } from "@/api/trips";
 import type { TripCreatePayload, TripDetail } from "@/types/api";
 import { cn } from "@/lib/cn";
 
 import { AddressInput } from "./AddressInput";
+import { AutocompleteInput } from "./AutocompleteInput";
 import {
   blankDefaults,
   demoDefaults,
@@ -58,12 +52,18 @@ export function TripForm() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<TripFormValues>({
     resolver: zodResolver(tripFormSchema),
     defaultValues: blankDefaults(),
     mode: "onBlur",
   });
+
+  const currentLoc = watch("current_location");
+  const pickupLoc = watch("pickup_location");
+  const dropoffLoc = watch("dropoff_location");
 
   const mutation = useMutation<TripDetail, Error, TripCreatePayload>({
     mutationFn: createTrip,
@@ -106,16 +106,6 @@ export function TripForm() {
 
   return (
     <section className="w-full">
-      <header className="mb-8 sm:mb-10">
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[var(--fg)]">
-          Plan a trip
-        </h1>
-        <p className="mt-2 text-[var(--fg-muted)] text-base sm:text-lg max-w-2xl">
-          Enter trip details. We&rsquo;ll plan your stops and generate
-          FMCSA-compliant daily logs.
-        </p>
-      </header>
-
       <form
         onSubmit={onSubmit}
         noValidate
@@ -127,35 +117,33 @@ export function TripForm() {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
           <div className="md:col-span-2">
-            <AddressInput
+            <AutocompleteInput
               id="current_location"
               label="Current location"
               placeholder="e.g. Brooklyn, NY"
-              autoComplete="off"
-              icon={<MapPin className="h-4 w-4" />}
+              value={currentLoc ?? ""}
+              onChange={(v) => setValue("current_location", v, { shouldValidate: false })}
+              enableGeolocation
               error={errors.current_location?.message}
-              {...register("current_location")}
             />
           </div>
 
-          <AddressInput
+          <AutocompleteInput
             id="pickup_location"
             label="Pickup location"
             placeholder="e.g. Chicago, IL"
-            autoComplete="off"
-            icon={<MapPin className="h-4 w-4" />}
+            value={pickupLoc ?? ""}
+            onChange={(v) => setValue("pickup_location", v, { shouldValidate: false })}
             error={errors.pickup_location?.message}
-            {...register("pickup_location")}
           />
 
-          <AddressInput
+          <AutocompleteInput
             id="dropoff_location"
             label="Dropoff location"
             placeholder="e.g. Los Angeles, CA"
-            autoComplete="off"
-            icon={<MapPin className="h-4 w-4" />}
+            value={dropoffLoc ?? ""}
+            onChange={(v) => setValue("dropoff_location", v, { shouldValidate: false })}
             error={errors.dropoff_location?.message}
-            {...register("dropoff_location")}
           />
 
           <AddressInput
