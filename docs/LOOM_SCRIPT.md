@@ -6,10 +6,10 @@ A tight 4-minute walkthrough. Each beat has on-screen direction (the **clicks to
 
 | What | URL |
 |---|---|
-| **Frontend (Vercel, public)** | https://frontend-mu-five-51.vercel.app |
-| **Backend (Render, public)** | https://hos-logbook-backend.onrender.com |
-| **Backend health check** | https://hos-logbook-backend.onrender.com/healthz |
-| **GitHub repo** | https://github.com/pratham7711/hos-logbook |
+ Frontend (Vercel, public) : https://frontend-mu-five-51.vercel.app 
+ Backend (Render, public) : https://hos-logbook-backend.onrender.com 
+ Backend health check : https://hos-logbook-backend.onrender.com/healthz 
+ GitHub repo : https://github.com/pratham7711/hos-logbook 
 
 ## Tabs to pre-open before recording
 

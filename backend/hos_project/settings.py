@@ -101,6 +101,7 @@ CORS_ALLOWED_ORIGINS = [
 # Allow all Vercel preview URLs for this project (they change on every deploy).
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://frontend-[\w-]+-prathams-projects-371c8ade\.vercel\.app$",
+    r"^https://hos-logbook-[\w-]+-prathams-projects-371c8ade\.vercel\.app$",
 ]
 CORS_ALLOW_CREDENTIALS = False
 
