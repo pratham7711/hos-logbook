@@ -1,0 +1,31 @@
+name: keep-alive
+
+# Pings the Render backend /healthz endpoint so the free-tier web service
+# never goes to sleep (Render sleeps after 15 min idle, which causes a ~50s
+# cold start on the next user request).
+#
+# Cron runs every 10 minutes. GitHub Actions free tier covers this easily.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: GET /healthz
+        run: |
+          set -e
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 120 https://hos-logbook-backend.onrender.com/healthz || echo "000")
+            echo "attempt $i: HTTP $code"
+            if [ "$code" = "200" ]; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::backend did not respond 200 after 3 attempts"
+          exit 1
